@@ -43,7 +43,13 @@ This repository includes **3 active agentic workflows** you can test right now:
 
 3. **🔧 Create a New Workflow**: Use the [workflow creation template](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues/new/choose) to generate a custom workflow via AI
 
-📖 **See [Testing the Workflows](#-testing-the-workflows) for detailed instructions**
+### Create Your Own Workflows
+
+**🎨 Interactive in VS Code**: Open Copilot Chat and ask "Help me create a workflow that..." - the VS Code agent will guide you step-by-step
+
+**📋 Or use the web form**: Submit a workflow request via Issues and an AI agent will generate it automatically
+
+📖 **See [Creating Your Own Agentic Workflows](#-creating-your-own-agentic-workflows) for all options**
 
 ## 📁 Project Structure
 
@@ -134,6 +140,58 @@ The agent knows:
 - Tool selection and integration
 
 **Files**: [.github/agents/workflow-creator.agent.md](.github/agents/workflow-creator.agent.md)
+
+**How to Use**:
+
+1. **Open VS Code** in this repository
+2. **Open Copilot Chat** (Ctrl+Alt+I or Cmd+Alt+I)
+3. **Start a conversation** with prompts like:
+   ```
+   Help me create a workflow that sends a Slack notification when PRs are merged
+   ```
+   ```
+   Create a workflow that runs security scans on new commits
+   ```
+   ```
+   I need a workflow that auto-assigns reviewers based on file paths
+   ```
+
+4. **The agent will**:
+   - Ask clarifying questions (trigger, actions, tools needed)
+   - Suggest a workflow design
+   - Generate the `.md` file
+   - Compile it for you
+   - Provide testing instructions
+
+**Example Conversation**:
+```
+You: Create a workflow that welcomes new contributors
+
+Agent: I'll help you create a welcome workflow! A few questions:
+1. When should it trigger? (first issue, first PR, both?)
+2. Should it comment, add a label, or both?
+3. Any specific message you'd like to include?
+
+You: Trigger on first PR, add a comment and a "first-contribution" label
+
+Agent: Perfect! I'll create a workflow that:
+- Triggers on pull_request (opened)
+- Checks if it's the contributor's first PR
+- Adds a welcoming comment
+- Applies the "first-contribution" label
+
+[Agent generates the workflow file]
+
+Done! I've created .github/workflows/welcome-contributor.md
+Run this to compile it:
+gh aw compile welcome-contributor
+```
+
+**Why use the VS Code agent?**
+- 🎯 **Interactive** - Back-and-forth conversation to refine requirements
+- 🧠 **Smart suggestions** - Knows common patterns and best practices
+- ⚡ **Fast iteration** - Test and modify workflows quickly
+- 📚 **Learning tool** - Explains decisions and teaches you gh-aw
 
 ### Option B: Automated Workflow Generator 🚀
 
