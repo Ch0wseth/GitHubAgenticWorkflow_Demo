@@ -14,6 +14,8 @@ This project provides a comprehensive technical overview of **GitHub Agentic Wor
 
 ## 🚀 Quick Start
 
+### View the Technical Demo
+
 Simply open `website/index.html` in your web browser to view the demo:
 
 ```bash
@@ -31,19 +33,42 @@ npx http-server
 
 Then navigate to `http://localhost:8000` in your browser.
 
+### Try the Live Workflows
+
+This repository includes **3 active agentic workflows** you can test right now:
+
+1. **🤖 Test Issue Triage**: [Create a test issue](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues/new) and watch it get automatically labeled and triaged
+
+2. **📊 Generate Daily Report**: Go to [Actions](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions) → "Daily Repository Activity Report" → "Run workflow"
+
+3. **🔧 Create a New Workflow**: Use the [workflow creation template](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues/new/choose) to generate a custom workflow via AI
+
+📖 **See [Testing the Workflows](#-testing-the-workflows) for detailed instructions**
+
 ## 📁 Project Structure
 
 ```
 .
 ├── .github/
+│   ├── agents/
+│   │   └── workflow-creator.agent.md      # VS Code agent for creating workflows
+│   ├── ISSUE_TEMPLATE/
+│   │   └── create-workflow.yml            # Issue template for workflow requests
 │   └── workflows/
-│       └── issue-triage.md   # Agentic workflow for issue triage
+│       ├── issue-triage.md                # Agentic workflow: Issue triage
+│       ├── issue-triage.lock.yml          # Compiled workflow (auto-generated)
+│       ├── daily-activity-report.md       # Agentic workflow: Daily reports
+│       ├── daily-activity-report.lock.yml # Compiled workflow (auto-generated)
+│       ├── workflow-generator.md          # Agentic workflow: Workflow creation
+│       └── workflow-generator.lock.yml    # Compiled workflow (auto-generated)
 ├── website/
-│   ├── index.html            # Main HTML page with content
-│   ├── styles.css            # Modern dark-themed styling
-│   └── script.js             # Interactive JavaScript features
-├── .gitattributes            # Git attributes for lock files
-└── README.md                 # This file
+│   ├── index.html                         # Main HTML page with content
+│   ├── styles.css                         # Modern dark-themed styling
+│   └── script.js                          # Interactive JavaScript features
+├── TEST_SCENARIOS.md                      # Test scenarios for issue triage
+├── create-test-issues.ps1                 # Automated test script
+├── .gitattributes                         # Git attributes for lock files
+└── README.md                              # This file
 ```
 
 ## 🤖 Live Workflow Example: Issue Triage Agent
@@ -197,11 +222,169 @@ Create workflows manually using the gh-aw CLI:
 
 ## 📊 Active Workflows in This Repository
 
-| Workflow | Trigger | Purpose |
-|----------|---------|---------|
-| **Issue Triage** | New/edited issues | Automatically labels, prioritizes, and assigns issues |
-| **Daily Activity Report** | Daily (weekdays) | Generates a comprehensive activity report |
-| **Workflow Generator** | Issue with `workflow-request` label | Creates new workflows from issue templates |
+| Workflow | Trigger | Purpose | Test Instructions |
+|----------|---------|---------|-------------------|
+| **Issue Triage** | New/edited issues | Automatically labels, prioritizes, and assigns issues | [Create an issue](#testing-issue-triage) |
+| **Daily Activity Report** | Daily (weekdays) | Generates a comprehensive activity report | [Run manually](#testing-daily-report) or wait for schedule |
+| **Workflow Generator** | Issue with template | Creates new workflows from issue templates | [Use issue template](#testing-workflow-generator) |
+
+## 🧪 Testing the Workflows
+
+### Testing Issue Triage
+
+The easiest way is to use the **pre-built test scenarios**:
+
+#### Option 1: Automated Test Script (Recommended)
+
+```powershell
+.\create-test-issues.ps1
+```
+
+This automatically creates 7 test issues covering different scenarios (bugs, features, vague questions, duplicates, etc.).
+
+#### Option 2: Manual Testing
+
+1. Go to [Issues → New Issue](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues/new)
+2. Create an issue with one of the scenarios from [TEST_SCENARIOS.md](TEST_SCENARIOS.md)
+3. Wait 30-60 seconds
+4. Check the issue for:
+   - ✅ Applied labels (bug, feature, priority levels)
+   - 💬 Comments (clarifying questions, duplicate detection)
+   - 👤 Assignments (if configured)
+
+**Expected Results**:
+- Critical bugs get `priority: critical` label
+- Vague issues get clarifying questions + `needs-info` label
+- Similar issues are flagged as potential duplicates
+
+### Testing Daily Report
+
+#### Option 1: Manual Trigger (Fastest)
+
+1. Go to [Actions](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions)
+2. Click **"Daily Repository Activity Report"**
+3. Click **"Run workflow"** button
+4. Wait ~60 seconds
+5. Check [Issues](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues) for the new report
+
+#### Option 2: Wait for Scheduled Run
+
+The workflow runs automatically every weekday morning (fuzzy scheduled time).
+
+**Expected Results**:
+- 📊 New issue titled "📊 Daily Activity Report - [Date]"
+- 📈 Summary statistics (issues, PRs, commits)
+- ✅ Action items checklist
+- 🔄 Previous daily reports automatically closed
+
+### Testing Workflow Generator
+
+1. Go to [New Issue → Choose Template](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/issues/new/choose)
+2. Select **"🤖 Create Agentic Workflow"** template
+3. Fill out the form with a test workflow:
+   ```
+   Name: Test Greeting Workflow
+   Description: Comment "Hello!" on new issues
+   Trigger: When issues are opened or edited
+   Actions: ✓ Add comments to issues or PRs
+   ```
+4. Check both acknowledgments and submit
+5. Go to [Actions](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions) to watch it run
+6. After ~2 minutes, check:
+   - 💬 Comment on your issue with status
+   - 🔀 New PR with the generated workflow files
+
+**Expected Results**:
+- PR created with `.github/workflows/test-greeting-workflow.md` and `.lock.yml`
+- PR includes testing instructions
+- Workflow is ready to merge and activate
+
+## 📝 Test Resources
+
+- **[TEST_SCENARIOS.md](TEST_SCENARIOS.md)**: Detailed test scenarios for issue triage
+- **[create-test-issues.ps1](create-test-issues.ps1)**: Automated script to create all test scenarios
+
+---
+
+## 🔧 Configuration & Secrets
+
+### Required Secrets
+
+To use GitHub Copilot as the AI engine, you need to configure:
+
+1. **Create a Fine-Grained Personal Access Token**:
+   - Go to https://github.com/settings/personal-access-tokens/new
+   - Name: `GitHub Copilot for Workflows`
+   - Repository access: Select this repository
+   - Permissions:
+     - **Copilot**: Read and write
+     - **Issues**: Read and write
+     - **Metadata**: Read-only
+   - Account permissions:
+     - **Copilot user**: Read
+
+2. **Add Secret to Repository**:
+   - Go to [Settings → Secrets → Actions](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/settings/secrets/actions)
+   - Click **"New repository secret"**
+   - Name: `COPILOT_GITHUB_TOKEN`
+   - Value: Paste your fine-grained token (starts with `github_pat_...`)
+
+### Alternative: Use Claude
+
+To use Claude instead of Copilot, add `engine: claude` to any workflow frontmatter and configure `ANTHROPIC_API_KEY` secret.
+
+---
+
+## 🐛 Troubleshooting
+
+### Workflow Not Triggering
+
+**Problem**: Created an issue but the workflow didn't run.
+
+**Solutions**:
+1. Check [Actions tab](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions) - workflow might have run but failed
+2. Verify the workflow files are pushed to the `main` branch
+3. Check repository Settings → Actions → General → ensure workflows are enabled
+
+### "COPILOT_GITHUB_TOKEN secret not found"
+
+**Problem**: Workflow fails with secret validation error.
+
+**Solution**:
+1. Create a fine-grained PAT (not classic): https://github.com/settings/personal-access-tokens/new
+2. Token must start with `github_pat_...` (not `ghp_...`)
+3. Select scopes: `copilot` (read+write), `copilot:user` (read)
+4. Add to repository secrets as `COPILOT_GITHUB_TOKEN`
+
+### Workflow Generator Creates PR but Files are Protected
+
+**Problem**: "Cannot create pull request: patch modifies protected files"
+
+**Solution**: This should be fixed in the latest version. Pull the latest changes:
+```bash
+git pull origin main
+```
+
+### Agent Comments but Doesn't Apply Labels
+
+**Problem**: Agent comments on issues but labels aren't applied.
+
+**Possible Causes**:
+1. Labels don't exist in the repository - create them manually first
+2. Permissions issue - check that safe-outputs are configured correctly
+3. Check [Actions logs](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions) for detailed error messages
+
+### Daily Report Not Generating
+
+**Problem**: Scheduled workflow doesn't create daily reports.
+
+**Solutions**:
+1. Test manually first: Actions → "Daily Repository Activity Report" → "Run workflow"
+2. Check if there was any activity in the last 24 hours (no activity = no report via `noop`)
+3. Verify the workflow is on the `main` branch
+4. Check [Actions tab](https://github.com/Ch0wseth/GitHubAgenticWorkflow_Demo/actions) for execution history
+
+---
 
 ## ✨ Features
 
