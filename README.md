@@ -35,12 +35,59 @@ Then navigate to `http://localhost:8000` in your browser.
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       └── issue-triage.md   # Agentic workflow for issue triage
 ├── website/
-│   ├── index.html      # Main HTML page with content
-│   ├── styles.css      # Modern dark-themed styling
-│   └── script.js       # Interactive JavaScript features
-└── README.md           # This file
+│   ├── index.html            # Main HTML page with content
+│   ├── styles.css            # Modern dark-themed styling
+│   └── script.js             # Interactive JavaScript features
+├── .gitattributes            # Git attributes for lock files
+└── README.md                 # This file
 ```
+
+## 🤖 Live Workflow Example: Issue Triage Agent
+
+This repository includes a real **GitHub Agentic Workflow** that demonstrates automated issue triage. The workflow automatically:
+
+- **Labels by type**: Classifies issues as bug, feature, documentation, question, or maintenance
+- **Assesses priority**: Evaluates urgency and assigns priority levels (critical, high, medium, low)
+- **Detects duplicates**: Searches for similar existing issues and flags potential duplicates
+- **Requests clarification**: Asks follow-up questions when issue descriptions are unclear
+- **Assigns team members**: Routes issues to appropriate team members based on content
+
+### Setup Instructions
+
+To activate this workflow in your fork:
+
+1. **Compile the workflow** (requires [gh-aw CLI](https://github.com/github/gh-aw)):
+   ```bash
+   # Install gh-aw if not already installed
+   curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+   
+   # Compile the workflow
+   gh aw compile issue-triage
+   ```
+
+2. **Commit and push**:
+   ```bash
+   git add .gitattributes .github/workflows/issue-triage.md .github/workflows/issue-triage.lock.yml
+   git commit -m "Add issue triage agentic workflow"
+   git push
+   ```
+
+3. **Test it**: Open a new issue in your repository and watch the agent automatically triage it!
+
+### How It Works
+
+The workflow uses:
+- **Trigger**: Activates on `issues: [opened, edited]`
+- **Permissions**: Read-only access (secure by default)
+- **Tools**: GitHub MCP server for searching and analyzing issues
+- **Safe Outputs**: Controlled actions (commenting, labeling, assigning) with rate limits
+- **AI Engine**: GitHub Copilot (default) for intelligent decision-making
+
+See [.github/workflows/issue-triage.md](.github/workflows/issue-triage.md) for the complete workflow definition.
 
 ## ✨ Features
 
