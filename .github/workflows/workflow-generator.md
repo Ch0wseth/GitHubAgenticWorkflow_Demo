@@ -18,6 +18,9 @@ safe-outputs:
     max: 5
   create-pull-request:
     max: 1
+    allowed-files:
+      - ".github/workflows/*.md"
+      - ".github/workflows/*.lock.yml"
 ---
 
 # Workflow Generator Agent
