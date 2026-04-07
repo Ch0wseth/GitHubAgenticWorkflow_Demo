@@ -205,14 +205,20 @@ Submit a workflow request via GitHub Issues and let an AI agent create it for yo
    - What actions it should perform
 4. **Submit** the issue
 5. **Wait** for the AI agent to:
-   - Generate the workflow files
-   - Compile them
-   - Create a Pull Request
+   - Generate the workflow `.md` file
+   - Create a Pull Request with the workflow definition
    - Comment on your issue with the PR link
+6. **Review and compile**:
+   - Review the generated workflow in the PR
+   - Compile it locally: `gh aw compile [workflow-id]`
+   - Commit the generated `.lock.yml` file
+   - Merge the PR
 
 **Files**: 
 - Template: [.github/ISSUE_TEMPLATE/create-workflow.yml](.github/ISSUE_TEMPLATE/create-workflow.yml)
 - Workflow: [.github/workflows/workflow-generator.md](.github/workflows/workflow-generator.md)
+
+**Note**: The agent creates the workflow definition (`.md` file) but compilation to `.lock.yml` must be done manually after PR review. This ensures security and allows for human oversight before deploying new workflows.
 
 ### Option C: Manual Creation with gh-aw CLI 💻
 
@@ -610,14 +616,45 @@ Cost per workflow execution:  $0.01
 3. Select scopes: `copilot` (read+write), `copilot:user` (read)
 4. Add to repository secrets as `COPILOT_GITHUB_TOKEN`
 
-### Workflow Generator Creates PR but Files are Protected
+### Workflow Generator Timeout or Compilation Errors
 
-**Problem**: "Cannot create pull request: patch modifies protected files"
+**Problem**: Workflow generator times out or fails with compilation errors.
 
-**Solution**: This should be fixed in the latest version. Pull the latest changes:
-```bash
-git pull origin main
-```
+**Why This Happens**: 
+- The workflow generator creates the `.md` file but cannot compile to `.lock.yml` automatically
+- Compilation requires `gh-aw` CLI which runs outside the sandboxed environment
+- This is intentional for security - human review is needed before deploying new workflows
+
+**Solution - Manual Compilation After PR Review**:
+
+1. **Wait for the PR** to be created by the workflow generator
+2. **Review the generated `.md` file** in the PR
+3. **Checkout the PR branch locally**:
+   ```bash
+   gh pr checkout [PR-number]
+   ```
+4. **Compile the workflow**:
+   ```bash
+   gh aw compile [workflow-id]
+   
+   # Windows example:
+   # & "$env:USERPROFILE\.local\share\gh\extensions\gh-aw\gh-aw.exe" compile test-workflow
+   ```
+5. **Commit the `.lock.yml` file**:
+   ```bash
+   git add .github/workflows/[workflow-id].lock.yml
+   git commit -m "Compile [workflow-id] workflow"
+   git push
+   ```
+6. **Merge the PR** - the workflow is now active!
+
+**Alternative**: Use [Option A (VS Code Agent)](#option-a-vs-code-agent-assistant-) or [Option C (Manual CLI)](#option-c-manual-creation-with-gh-aw-cli-) for more control over the creation process.
+
+### Workflow Generator Creates PR but Missing .lock.yml File
+
+**Problem**: PR only contains `.md` file, no `.lock.yml` file.
+
+**This is expected behavior!** The `.lock.yml` file must be compiled manually after PR review (see above).
 
 ### Agent Comments but Doesn't Apply Labels
 
