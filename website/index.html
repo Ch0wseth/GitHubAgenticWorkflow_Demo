@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Agentic Workflow - Demo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>⚡ GitHub Agentic Workflow</h1>
+            <p class="tagline">Architecture & Implementation Guide for Technical Teams</p>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>Agentic Workflow: Technical Overview</h2>
+            <p>
+                Agentic workflow leverages LLM-powered autonomous agents to orchestrate complex SDLC tasks through 
+                event-driven architecture, tool integration, and state management. This approach enables deterministic 
+                execution of non-deterministic AI models within production CI/CD pipelines, providing measurable 
+                improvements in development velocity, code quality metrics, and technical debt reduction.
+            </p>
+        </section>
+
+        <section class="key-concepts">
+            <h2>Core Architecture Patterns</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>🏗️ Agent Orchestration</h3>
+                    <p>Multi-agent systems with ReAct (Reasoning + Acting) pattern, hierarchical task decomposition, and autonomous decision trees. Supports both synchronous and async execution models.</p>
+                </div>
+                <div class="card">
+                    <h3>🔌 Tool Integration Layer</h3>
+                    <p>Standardized APIs (REST, GraphQL, MCP protocol) for agent-to-service communication. Includes authentication, rate limiting, and error recovery mechanisms.</p>
+                </div>
+                <div class="card">
+                    <h3>💾 State Management</h3>
+                    <p>Persistent agent memory using vector databases (Pinecone, Weaviate), conversation history, and contextual embeddings for long-running workflows.</p>
+                </div>
+                <div class="card">
+                    <h3>⚡ Event-Driven Architecture</h3>
+                    <p>GitHub webhooks, Actions triggers, and pub/sub patterns for real-time agent activation on code events (push, PR, issue, release).</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture">
+            <h2>🏛️ Technical Architecture</h2>
+            <div class="architecture-diagram">
+                <pre class="code-block">┌─────────────────────────────────────────────────────┐
+│  GitHub Platform (Webhooks, API, Actions)          │
+└──────────────────┬──────────────────────────────────┘
+                   │ Event Triggers
+                   ▼
+┌─────────────────────────────────────────────────────┐
+│  Agent Orchestration Layer                         │
+│  ├─ Agent Router (Task Assignment)                 │
+│  ├─ Context Builder (Repo Analysis, Embeddings)    │
+│  └─ Execution Engine (Parallel/Sequential)         │
+└──────────────────┬──────────────────────────────────┘
+                   │
+         ┌─────────┴─────────┬─────────────┐
+         ▼                   ▼             ▼
+    [Code Agent]        [Review Agent]  [Test Agent]
+         │                   │             │
+         └─────────┬─────────┴─────────────┘
+                   ▼
+┌─────────────────────────────────────────────────────┐
+│  Tool Layer (GitHub API, Linters, Compilers, etc)  │
+└─────────────────────────────────────────────────────┘
+                   │
+                   ▼
+┌─────────────────────────────────────────────────────┐
+│  Storage Layer (Vector DB, Cache, Artifacts)       │
+└─────────────────────────────────────────────────────┘</pre>
+            </div>
+        </section>
+
+        <section class="benefits">
+            <h2>Technical Benefits & Metrics</h2>
+            <ul>
+                <li><strong>Development Velocity:</strong> 30-40% reduction in time-to-PR through automated scaffolding, test generation, and boilerplate elimination</li>
+                <li><strong>Code Quality Metrics:</strong> Consistent enforcement of linting rules, security scanning (SAST/DAST), and architectural patterns across all PRs</li>
+                <li><strong>Technical Debt:</strong> Automated refactoring suggestions, dependency updates, and codebase health monitoring with measurable debt reduction</li>
+                <li><strong>Test Coverage:</strong> Automated test generation targeting low-coverage modules, achieving 80%+ coverage with edge case detection</li>
+                <li><strong>Review Efficiency:</strong> Pre-review automated checks reduce human review time by 50%, catching common issues before manual review</li>
+                <li><strong>Scalability:</strong> Parallel agent execution handles multiple PRs simultaneously without blocking, supporting high-velocity teams</li>
+            </ul>
+        </section>
+
+        <section class="implementation">
+            <h2>💻 Implementation Examples</h2>
+            
+            <div class="code-example">
+                <h3>Agent Configuration (YAML)</h3>
+                <pre class="code-block"><code># .github/agents/code-review-agent.yml
+name: code-review-agent
+version: 1.0.0
+
+triggers:
+  - event: pull_request
+    actions: [opened, synchronize]
+    filters:
+      branches: [main, develop]
+      paths: ["src/**", "lib/**"]
+
+agent:
+  model: gpt-4-turbo
+  temperature: 0.2
+  max_tokens: 4096
+  
+  tools:
+    - github_api
+    - eslint
+    - sonarqube
+    - semgrep
+  
+  prompts:
+    system: |
+      You are a senior code reviewer. Analyze code changes for:
+      - Security vulnerabilities (OWASP Top 10)
+      - Performance issues (O(n²) algorithms, memory leaks)
+      - Best practices violations
+      - Test coverage gaps
+    
+  workflow:
+    - step: fetch_pr_diff
+      tool: github_api
+      
+    - step: static_analysis
+      parallel:
+        - tool: eslint
+        - tool: semgrep
+        - tool: sonarqube
+    
+    - step: ai_review
+      context: [pr_diff, static_results, repo_conventions]
+      
+    - step: post_review
+      tool: github_api
+      action: create_review_comment</code></pre>
+            </div>
+
+            <div class="code-example">
+                <h3>Multi-Agent Orchestration (Python - AutoGen)</h3>
+                <pre class="code-block"><code>from autogen import Agent, GroupChat, GroupChatManager
+
+# Define specialized agents
+architect_agent = Agent(
+    name="architect",
+    system_message="""You design system architecture and APIs.
+    Output: Technical specifications, API contracts, data models.""",
+    llm_config={"model": "gpt-4", "temperature": 0.3}
+)
+
+dev_agent = Agent(
+    name="developer",
+    system_message="""You implement code based on specs.
+    Languages: Python, TypeScript, Go. Follow TDD principles.""",
+    llm_config={"model": "gpt-4", "temperature": 0.2}
+)
+
+review_agent = Agent(
+    name="reviewer",
+    system_message="""You review code for quality and security.
+    Check: SOLID principles, security, performance, tests.""",
+    llm_config={"model": "gpt-4", "temperature": 0.1}
+)
+
+# Orchestrate workflow
+groupchat = GroupChat(
+    agents=[architect_agent, dev_agent, review_agent],
+    messages=[],
+    max_round=10
+)
+
+manager = GroupChatManager(groupchat=groupchat)
+
+# Execute: Design → Implement → Review cycle
+architect_agent.initiate_chat(
+    manager,
+    message="Design a REST API for user authentication with OAuth2"
+)</code></pre>
+            </div>
+
+            <div class="code-example">
+                <h3>GitHub Actions Integration</h3>
+                <pre class="code-block"><code># .github/workflows/agentic-pr-review.yml
+name: Agentic PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  agent-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Agent Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install Dependencies
+        run: |
+          pip install autogen-agentchat langchain openai
+          pip install -r requirements.txt
+      
+      - name: Run Agent Orchestrator
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python .github/agents/orchestrator.py \
+            --pr-number ${{ github.event.pull_request.number }} \
+            --repo ${{ github.repository }} \
+            --agent-config .github/agents/review-config.yml
+      
+      - name: Post Results
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('agent-results.json'));
+            
+            await github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+              body: results.summary,
+              event: results.approved ? 'APPROVE' : 'REQUEST_CHANGES',
+              comments: results.inline_comments
+            });</code></pre>
+            </div>
+        </section>
+
+        <section class="use-cases">
+            <h2>Enterprise Use Cases</h2>
+            <div class="use-case-grid">
+                <div class="use-case">
+                    <h4>Microservices Scaffolding</h4>
+                    <p>Auto-generate service boilerplate with OpenAPI specs, Dockerfiles, K8s manifests, observability, and IaC following organizational standards</p>
+                </div>
+                <div class="use-case">
+                    <h4>Security-First Code Review</h4>
+                    <p>SAST/DAST integration with CVE detection, dependency scanning, secrets detection, and compliance verification (SOC2, GDPR)</p>
+                </div>
+                <div class="use-case">
+                    <h4>Legacy Migration</h4>
+                    <p>Automated refactoring for framework upgrades (Angular migration, Python 2→3), architecture patterns (monolith→microservices)</p>
+                </div>
+                <div class="use-case">
+                    <h4>Test Automation</h4>
+                    <p>Generate unit/integration/E2E tests with mocking strategies, edge case coverage, and mutation testing for critical paths</p>
+                </div>
+                <div class="use-case">
+                    <h4>API Contract Enforcement</h4>
+                    <p>Validate OpenAPI/GraphQL schema changes, backward compatibility, versioning strategies, and breaking change detection</p>
+                </div>
+                <div class="use-case">
+                    <h4>Performance Regression</h4>
+                    <p>Automated benchmarking on PRs, memory profiling, query optimization suggestions, and performance budget enforcement</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="resources">
+            <h2>📚 Technical Resources & APIs</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h4>Agent Frameworks & SDKs</h4>
+                    <a href="https://github.com/microsoft/autogen" target="_blank">AutoGen - Multi-agent orchestration with group chat</a>
+                    <a href="https://github.com/langchain-ai/langchain" target="_blank">LangChain - Agent chains, memory, tools</a>
+                    <a href="https://github.com/microsoft/semantic-kernel" target="_blank">Semantic Kernel - Enterprise AI orchestration</a>
+                    <a href="https://github.com/microsoft/agent-framework" target="_blank">Microsoft Agent Framework SDK</a>
+                    <a href="https://github.com/smolagents/smolagents" target="_blank">Smolagents - Lightweight agent framework</a>
+                </div>
+                
+                <div class="resource-item">
+                    <h4>GitHub Platform APIs</h4>
+                    <a href="https://docs.github.com/en/rest" target="_blank">GitHub REST API v3 - CRUD operations</a>
+                    <a href="https://docs.github.com/en/graphql" target="_blank">GitHub GraphQL API v4 - Efficient queries</a>
+                    <a href="https://docs.github.com/en/webhooks" target="_blank">Webhooks - Event-driven triggers</a>
+                    <a href="https://docs.github.com/en/actions" target="_blank">GitHub Actions API - Workflow automation</a>
+                    <a href="https://docs.github.com/en/apps" target="_blank">GitHub Apps - OAuth, installations, permissions</a>
+                </div>
+                
+                <div class="resource-item">
+                    <h4>Vector DBs & Embeddings</h4>
+                    <a href="https://github.com/chroma-core/chroma" target="_blank">ChromaDB - Open-source vector store</a>
+                    <a href="https://github.com/pinecone-io/pinecone-python-client" target="_blank">Pinecone - Managed vector database</a>
+                    <a href="https://github.com/weaviate/weaviate" target="_blank">Weaviate - GraphQL vector search</a>
+                    <a href="https://github.com/qdrant/qdrant" target="_blank">Qdrant - High-performance vector DB</a>
+                    <a href="https://github.com/openai/openai-python" target="_blank">OpenAI Embeddings API</a>
+                </div>
+                
+                <div class="resource-item">
+                    <h4>Code Analysis Tools</h4>
+                    <a href="https://github.com/returntocorp/semgrep" target="_blank">Semgrep - SAST with custom rules</a>
+                    <a href="https://github.com/github/codeql" target="_blank">CodeQL - Semantic code analysis</a>
+                    <a href="https://github.com/SonarSource/sonarqube" target="_blank">SonarQube - Code quality & security</a>
+                    <a href="https://github.com/tree-sitter/tree-sitter" target="_blank">Tree-sitter - Incremental parsing</a>
+                </div>
+                
+                <div class="resource-item">
+                    <h4>Architecture Patterns</h4>
+                    <a href="https://github.com/langchain-ai/langgraph" target="_blank">LangGraph - State machine workflows</a>
+                    <a href="https://github.com/microsoft/semantic-kernel/blob/main/docs/PLANNERS.md" target="_blank">SK Planners - Task decomposition</a>
+                    <a href="https://github.com/topics/react-agent" target="_blank">ReAct Pattern - Reasoning + Acting</a>
+                    <a href="https://github.com/modelcontextprotocol" target="_blank">Model Context Protocol (MCP)</a>
+                </div>
+                
+                <div class="resource-item">
+                    <h4>Reference Implementations</h4>
+                    <a href="https://github.com/microsoft/autogen/tree/main/notebook" target="_blank">AutoGen Examples - Multi-agent scenarios</a>
+                    <a href="https://github.com/langchain-ai/langchain/tree/master/templates" target="_blank">LangChain Templates - Production patterns</a>
+                    <a href="https://github.com/Significant-Gravitas/AutoGPT" target="_blank">AutoGPT - Autonomous task execution</a>
+                    <a href="https://github.com/microsoft/github-copilot-engineering" target="_blank">Copilot Engineering Practices</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="security">
+            <h2>🔒 Security & Compliance Considerations</h2>
+            <div class="security-grid">
+                <div class="security-item">
+                    <h4>Prompt Injection Defense</h4>
+                    <p>Input sanitization, structured outputs (JSON mode), guardrail prompts, and content filtering to prevent malicious prompt manipulation</p>
+                </div>
+                <div class="security-item">
+                    <h4>Secret Management</h4>
+                    <p>Never include API keys in prompts. Use GitHub Secrets, Azure Key Vault, or HashiCorp Vault with short-lived tokens and rotation policies</p>
+                </div>
+                <div class="security-item">
+                    <h4>Code Execution Sandboxing</h4>
+                    <p>Run agent-generated code in isolated containers (Docker, gVisor) with network policies, resource limits, and read-only filesystems</p>
+                </div>
+                <div class="security-item">
+                    <h4>Audit Logging</h4>
+                    <p>Log all agent decisions, tool invocations, and code modifications with traceability for compliance (SOC2, ISO 27001) and incident response</p>
+                </div>
+                <div class="security-item">
+                    <h4>RBAC & Permissions</h4>
+                    <p>Least-privilege GitHub tokens, repository-scoped permissions, branch protection rules, and approval workflows for agent-generated PRs</p>
+                </div>
+                <div class="security-item">
+                    <h4>Data Privacy</h4>
+                    <p>Anonymize PII before sending to LLMs, use on-premise models for sensitive codebases, implement data retention policies</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="getting-started">
+            <h2>🚀 Implementation Roadmap</h2>
+            <div class="steps">
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <h4>POC Phase</h4>
+                    <p>Single agent for code review on non-critical repos. Measure precision/recall. Establish baseline metrics (review time, bug detection rate)</p>
+                </div>
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <h4>Tool Integration</h4>
+                    <p>Connect to existing toolchain: GitHub API, linters, SAST, test frameworks. Implement MCP or custom API adapters with error handling</p>
+                </div>
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <h4>Multi-Agent System</h4>
+                    <p>Deploy specialized agents (architect, dev, reviewer, tester). Implement orchestration with AutoGen/LangGraph and define communication protocols</p>
+                </div>
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <h4>Production Hardening</h4>
+                    <p>Add monitoring (latency, cost, success rate), implement security controls, set up failover, establish SLAs, and create runbooks</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Created for GitHub Agentic Workflow Demo | 2026</p>
+        <p>Learn more at <a href="https://github.com" target="_blank">github.com</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
