@@ -1,0 +1,89 @@
+name: 🤖 Create Agentic Workflow
+description: Create a new GitHub Agentic Workflow by describing what you want to automate
+title: "[Workflow Request] "
+labels: ["workflow-request", "automation"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🤖 Create a New Agentic Workflow
+        
+        Describe the workflow you want to create and the AI agent will generate it for you!
+        
+  - type: input
+    id: workflow_name
+    attributes:
+      label: Workflow Name
+      description: A short, descriptive name for your workflow
+      placeholder: "e.g., Issue Classifier, PR Reviewer, Daily Standup Report"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: workflow_description
+    attributes:
+      label: Workflow Description
+      description: Describe what this workflow should do
+      placeholder: |
+        Example: "Automatically label issues based on their content, detect duplicates, and assign them to the right team members."
+        
+        Be specific about:
+        - What triggers the workflow (new issue, PR, schedule, command)
+        - What the agent should analyze or process
+        - What actions it should take (comment, label, create issue, etc.)
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: trigger_type
+    attributes:
+      label: When should this workflow run?
+      description: Select the primary trigger for this workflow
+      options:
+        - "When issues are opened or edited"
+        - "When pull requests are opened or updated"
+        - "On a schedule (daily, weekly)"
+        - "When a slash command is used (/command)"
+        - "When a specific label is applied"
+        - "Manually (workflow_dispatch)"
+        - "Other (describe in additional context)"
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: actions_needed
+    attributes:
+      label: What actions should the workflow perform?
+      description: Select all that apply
+      options:
+        - label: Add comments to issues or PRs
+        - label: Add or modify labels
+        - label: Create new issues
+        - label: Create pull requests
+        - label: Assign issues/PRs to users
+        - label: Update issue/PR content
+        - label: Search and analyze repository content
+        - label: Fetch data from external APIs
+        - label: Other (describe in additional context)
+        
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context (Optional)
+      description: Any other details, requirements, or examples
+      placeholder: |
+        - Specific labels to use
+        - Team members to assign to
+        - External APIs to integrate
+        - Special rules or conditions
+        - Examples of what you want to achieve
+        
+  - type: checkboxes
+    id: acknowledgment
+    attributes:
+      label: Acknowledgment
+      options:
+        - label: I understand that the AI agent will create a workflow based on this description
+          required: true
+        - label: I will review the generated workflow before merging it
+          required: true

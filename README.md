@@ -89,6 +89,120 @@ The workflow uses:
 
 See [.github/workflows/issue-triage.md](.github/workflows/issue-triage.md) for the complete workflow definition.
 
+## 🔧 Creating Your Own Agentic Workflows
+
+This repository provides **3 different ways** to create new agentic workflows:
+
+### Option A: VS Code Agent Assistant 🤖
+
+Use the **Workflow Creator Agent** directly in VS Code:
+
+1. Open VS Code in this repository
+2. Start a chat with GitHub Copilot
+3. Ask: "Help me create a workflow that..."
+4. The agent will guide you through the creation process interactively
+
+The agent knows:
+- Common workflow patterns (issue triage, PR review, daily reports)
+- Security best practices
+- Safe outputs configuration
+- Tool selection and integration
+
+**Files**: [.github/agents/workflow-creator.agent.md](.github/agents/workflow-creator.agent.md)
+
+### Option B: Automated Workflow Generator 🚀
+
+Submit a workflow request via GitHub Issues and let an AI agent create it for you:
+
+1. **Go to Issues** → **New Issue**
+2. **Select**: "🤖 Create Agentic Workflow" template
+3. **Fill out the form**:
+   - Workflow name and description
+   - When it should run (trigger)
+   - What actions it should perform
+4. **Submit** the issue
+5. **Wait** for the AI agent to:
+   - Generate the workflow files
+   - Compile them
+   - Create a Pull Request
+   - Comment on your issue with the PR link
+
+**Files**: 
+- Template: [.github/ISSUE_TEMPLATE/create-workflow.yml](.github/ISSUE_TEMPLATE/create-workflow.yml)
+- Workflow: [.github/workflows/workflow-generator.md](.github/workflows/workflow-generator.md)
+
+### Option C: Manual Creation with gh-aw CLI 💻
+
+Create workflows manually using the gh-aw CLI:
+
+1. **Install gh-aw** (if not already installed):
+   ```bash
+   # Linux/Mac
+   curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+   
+   # Windows PowerShell
+   $ExtensionDir = "$env:USERPROFILE\.local\share\gh\extensions\gh-aw"
+   New-Item -ItemType Directory -Force -Path $ExtensionDir | Out-Null
+   Invoke-WebRequest -Uri "https://github.com/github/gh-aw/releases/latest/download/windows-amd64.exe" -OutFile "$ExtensionDir\gh-aw.exe"
+   ```
+
+2. **Create a workflow file** `.github/workflows/my-workflow.md`:
+   ```markdown
+   ---
+   description: Brief description of what this workflow does
+   on:
+     issues:
+       types: [opened]
+   permissions:
+     contents: read
+     issues: read
+   tools:
+     github:
+       toolsets: [default]
+   safe-outputs:
+     add-comment:
+       max: 1
+   ---
+   
+   # Workflow Name
+   
+   You are an AI agent that [does something].
+   
+   ## Your Task
+   
+   [Instructions for the agent]
+   ```
+
+3. **Compile the workflow**:
+   ```bash
+   # Linux/Mac
+   gh aw compile my-workflow
+   
+   # Windows
+   & "$env:USERPROFILE\.local\share\gh\extensions\gh-aw\gh-aw.exe" compile my-workflow
+   ```
+
+4. **Commit and push**:
+   ```bash
+   git add .github/workflows/
+   git commit -m "Add my-workflow"
+   git push
+   ```
+
+**Resources**:
+- [Official gh-aw Documentation](https://github.github.com/gh-aw/)
+- [Workflow Examples](.github/workflows/)
+
+---
+
+## 📊 Active Workflows in This Repository
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| **Issue Triage** | New/edited issues | Automatically labels, prioritizes, and assigns issues |
+| **Daily Activity Report** | Daily (weekdays) | Generates a comprehensive activity report |
+| **Workflow Generator** | Issue with `workflow-request` label | Creates new workflows from issue templates |
+
 ## ✨ Features
 
 - **Technical Architecture Diagrams** - Visual representation of agent orchestration layers
