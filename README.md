@@ -393,7 +393,203 @@ To use Claude instead of Copilot, add `engine: claude` to any workflow frontmatt
 
 ---
 
-## 🐛 Troubleshooting
+## � Pricing & Cost Considerations
+
+### AI Engine Costs
+
+GitHub Agentic Workflows require an AI engine to power the agents. Here's what you need to know about pricing:
+
+#### Option 1: GitHub Copilot (Recommended)
+
+**Pricing Models**:
+- **GitHub Copilot Individual**: $10/month or $100/year
+- **GitHub Copilot Business**: $19/user/month
+- **GitHub Copilot Enterprise**: $39/user/month
+
+**What's Included for Agentic Workflows**:
+- ✅ Unlimited workflow executions
+- ✅ Access to GPT-4 and GPT-4-turbo models
+- ✅ No per-request charges
+- ✅ Built-in rate limiting and quotas
+- ✅ Enterprise-grade security and compliance
+
+**Best For**: Teams already using GitHub Copilot, or those wanting predictable monthly costs.
+
+**Example Cost**:
+```
+Organization with 10 developers using Copilot Business
+= $19 × 10 = $190/month (all workflows included)
+```
+
+#### Option 2: External AI Models (Claude, GPT-4, etc.)
+
+**Claude (Anthropic)**:
+- **Claude 3.5 Sonnet**: $3 per million input tokens, $15 per million output tokens
+- **Claude 3 Opus**: $15 per million input tokens, $75 per million output tokens
+- **Claude 3 Haiku**: $0.25 per million input tokens, $1.25 per million output tokens
+
+**OpenAI Direct**:
+- **GPT-4 Turbo**: $10 per million input tokens, $30 per million output tokens
+- **GPT-4**: $30 per million input tokens, $60 per million output tokens
+- **GPT-3.5 Turbo**: $0.50 per million input tokens, $1.50 per million output tokens
+
+**Best For**: Organizations wanting flexibility, using multiple AI providers, or needing specific model capabilities.
+
+**Example Cost** (Claude 3.5 Sonnet):
+```
+Typical issue triage workflow:
+- Input: ~2,000 tokens (issue content + instructions)
+- Output: ~500 tokens (labels, comments, analysis)
+- Cost per execution: ($3 × 0.002) + ($15 × 0.0005) = $0.006 + $0.0075 = ~$0.014
+
+For 100 issues/month: $1.40/month
+For 1,000 issues/month: $14/month
+```
+
+### GitHub Actions Costs
+
+Workflows run on GitHub Actions, which has its own pricing:
+
+**GitHub Actions Minutes**:
+- **Public repositories**: ✅ Free unlimited
+- **Private repositories**: 
+  - Free tier: 2,000 minutes/month (GitHub Free)
+  - Team: 3,000 minutes/month
+  - Enterprise: 50,000 minutes/month
+  - Additional: $0.008/minute (Linux runners)
+
+**Typical Workflow Executions**:
+- Simple issue triage: ~30-60 seconds
+- Complex PR review: ~2-5 minutes
+- Daily report generation: ~1-3 minutes
+
+**Example Cost**:
+```
+Private repo with 500 issues/month:
+- Executions: 500 × 1 minute = 500 minutes
+- Within free tier: $0/month
+- If exceeding: 500 × $0.008 = $4/month (Actions overage)
+```
+
+### Total Cost Estimation
+
+#### Scenario 1: Small Team (5 developers, ~200 issues/month)
+
+**Option A - Using Copilot**:
+```
+GitHub Copilot Business:     $95/month (5 × $19)
+GitHub Actions:               $0/month (within free tier)
+────────────────────────────
+Total:                        $95/month
+Cost per workflow execution:  $0.48
+```
+
+**Option B - Using Claude 3.5 Sonnet**:
+```
+Claude API costs:             ~$2.80/month (200 × $0.014)
+GitHub Actions:               $0/month (within free tier)
+────────────────────────────
+Total:                        $2.80/month
+Cost per workflow execution:  $0.014
+```
+
+#### Scenario 2: Medium Team (20 developers, ~1,500 issues+PRs/month)
+
+**Option A - Using Copilot**:
+```
+GitHub Copilot Business:      $380/month (20 × $19)
+GitHub Actions:               $0/month (within free tier)
+────────────────────────────
+Total:                        $380/month
+Cost per workflow execution:  $0.25
+```
+
+**Option B - Using Claude 3.5 Sonnet**:
+```
+Claude API costs:             ~$21/month (1,500 × $0.014)
+GitHub Actions:               $5/month (overage)
+────────────────────────────
+Total:                        $26/month
+Cost per workflow execution:  $0.017
+```
+
+#### Scenario 3: Enterprise (100+ developers, 10,000+ events/month)
+
+**Option A - Using Copilot Enterprise**:
+```
+GitHub Copilot Enterprise:    $3,900/month (100 × $39)
+GitHub Actions:               Included in Enterprise
+────────────────────────────
+Total:                        $3,900/month
+Cost per workflow execution:  $0.39
+```
+
+**Option B - Using Claude (optimized)**:
+```
+Claude 3 Haiku (fast tasks):  ~$20/month (8,000 × $0.0025)
+Claude 3.5 Sonnet (complex):  ~$28/month (2,000 × $0.014)
+GitHub Actions:               $50/month (overage)
+────────────────────────────
+Total:                        $98/month
+Cost per workflow execution:  $0.01
+```
+
+### Cost Optimization Tips
+
+1. **Choose the Right Engine**:
+   - Already have Copilot? → Use it (no additional cost)
+   - Pay-per-use preference? → Use Claude Haiku for simple tasks
+   - Need latest capabilities? → Use Claude 3.5 Sonnet or GPT-4
+
+2. **Optimize Workflow Triggers**:
+   - Use debouncing: Wait for multiple edits before reprocessing
+   - Filter events: Only trigger on meaningful changes
+   - Use `workflow_dispatch` for testing (manual triggers)
+
+3. **Configure Safe Outputs Wisely**:
+   - Set `max` limits to prevent runaway costs
+   - Use `noop` output when no action is needed
+
+4. **Token Optimization**:
+   - Keep prompts concise and focused
+   - Use summarization for long issues/PRs
+   - Cache context when possible (upcoming feature)
+
+5. **Use Scheduled Workflows Efficiently**:
+   - Batch operations (daily reports vs per-event)
+   - Run during off-peak hours
+   - Use fuzzy scheduling to spread load
+
+6. **Monitor Usage**:
+   - Track workflow execution counts
+   - Monitor API token usage
+   - Review GitHub Actions minutes consumption
+   - Set up budget alerts
+
+### Cost Comparison Summary
+
+| Use Case | Best Choice | Monthly Cost | Notes |
+|----------|-------------|--------------|-------|
+| Small team, already using Copilot | GitHub Copilot | ~$95-$190 | No additional cost if you have Copilot |
+| Small team, no Copilot | Claude Haiku | ~$1-5 | Most cost-effective for low volume |
+| Medium team with Copilot | GitHub Copilot | ~$380 | Predictable, unlimited usage |
+| Medium team, no Copilot | Claude 3.5 Sonnet | ~$20-50 | Pay-per-use flexibility |
+| Enterprise with Copilot | GitHub Copilot Enterprise | ~$3,900+ | Includes advanced features |
+| Enterprise, cost-sensitive | Claude (mixed) | ~$100-500 | Use Haiku for simple tasks, Sonnet for complex |
+| Public open-source projects | Any option | $0-10 | GitHub Actions free, minimal AI costs |
+
+### Hidden Costs to Consider
+
+- **Development Time**: Setting up and maintaining workflows
+- **Learning Curve**: Training team on agentic workflow patterns
+- **Infrastructure**: Additional tooling, monitoring, and logging
+- **Support**: Troubleshooting and debugging workflow issues
+
+**💡 Pro Tip**: For most teams, GitHub Copilot provides the best value if you're already using it for code completion. For new teams or low-volume usage, Claude Haiku offers the lowest per-execution cost.
+
+---
+
+## �🐛 Troubleshooting
 
 ### Workflow Not Triggering
 
